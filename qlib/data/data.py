@@ -407,11 +407,11 @@ class DatasetProvider(object):
         normalize_column_names = normalize_cache_fields(column_names)
         data = dict()
         # One process for one task, so that the memory will be freed quicker.
+        workers = min(C.kernels, len(instruments_d))
         if C.maxtasksperchild is None:
-            p = Pool(processes=C.kernels)
+            p = Pool(processes=workers)
         else:
-            p = Pool(processes=C.kernels, maxtasksperchild=C.maxtasksperchild)
-
+            p = Pool(processes=workers, maxtasksperchild=C.maxtasksperchild)
         if isinstance(instruments_d, dict):
             for inst, spans in instruments_d.items():
                 data[inst] = p.apply_async(
@@ -459,7 +459,7 @@ class DatasetProvider(object):
         return data
 
     @staticmethod
-    def expression_calculator(inst, start_time, end_time, freq, column_names, spans=None, C=None):
+    def expression_calculator(inst, start_time, end_time, freq, column_names, spans=None, g_config=None):
         """
         Calculate the expressions for one instrument, return a df result.
         If the expression has been calculated before, load from cache.
@@ -467,6 +467,9 @@ class DatasetProvider(object):
         return value: A data frame with index 'datetime' and other data columns.
 
         """
+        # FIXME: Windows OS or MacOS using spawn: https://docs.python.org/3.8/library/multiprocessing.html?highlight=spawn#contexts-and-start-methods
+        global C
+        C = g_config
         # NOTE: This place is compatible with windows, windows multi-process is spawn
         if getattr(ExpressionD, "_provider", None) is None:
             register_all_wrappers()
@@ -502,10 +505,7 @@ class LocalCalendarProvider(CalendarProvider):
     @property
     def _uri_cal(self):
         """Calendar file uri."""
-        if self.remote:
-            return os.path.join(C.mount_path, "calendars", "{}.txt")
-        else:
-            return os.path.join(C.provider_uri, "calendars", "{}.txt")
+        return os.path.join(C.get_data_path(), "calendars", "{}.txt")
 
     def _load_calendar(self, freq, future):
         """Load original calendar timestamp from file.
@@ -568,7 +568,7 @@ class LocalInstrumentProvider(InstrumentProvider):
     @property
     def _uri_inst(self):
         """Instrument file uri."""
-        return os.path.join(C.provider_uri, "instruments", "{}.txt")
+        return os.path.join(C.get_data_path(), "instruments", "{}.txt")
 
     def _load_instruments(self, market):
         fname = self._uri_inst.format(market)
@@ -637,10 +637,7 @@ class LocalFeatureProvider(FeatureProvider):
     @property
     def _uri_data(self):
         """Static feature file uri."""
-        if self.remote:
-            return os.path.join(C.mount_path, "features", "{}", "{}.{}.bin")
-        else:
-            return os.path.join(C.provider_uri, "features", "{}", "{}.{}.bin")
+        return os.path.join(C.get_data_path(), "features", "{}", "{}.{}.bin")
 
     def feature(self, instrument, field, start_index, end_index, freq):
         # validate
@@ -718,11 +715,11 @@ class LocalDatasetProvider(DatasetProvider):
             return
         start_time = cal[0]
         end_time = cal[-1]
-
+        workers = min(C.kernels, len(instruments_d))
         if C.maxtasksperchild is None:
-            p = Pool(processes=C.kernels)
+            p = Pool(processes=workers)
         else:
-            p = Pool(processes=C.kernels, maxtasksperchild=C.maxtasksperchild)
+            p = Pool(processes=workers, maxtasksperchild=C.maxtasksperchild)
 
         for inst in instruments_d:
             p.apply_async(
@@ -914,7 +911,7 @@ class ClientDatasetProvider(DatasetProvider):
             get_module_logger("data").debug("get result")
             try:
                 # pre-mound nfs, used for demo
-                mnt_feature_uri = os.path.join(C.mount_path, C.dataset_cache_dir_name, feature_uri)
+                mnt_feature_uri = os.path.join(C.get_data_path(), C.dataset_cache_dir_name, feature_uri)
                 df = DiskDatasetCache.read_data_from_cache(mnt_feature_uri, start_time, end_time, fields)
                 get_module_logger("data").debug("finish slicing data")
                 if return_uri:

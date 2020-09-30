@@ -1,9 +1,15 @@
-
+[![Python Versions](https://img.shields.io/pypi/pyversions/pyqlib.svg?logo=python&logoColor=white)](https://pypi.org/project/pyqlib/#files)
+[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20windows%20%7C%20macos-lightgrey)](https://pypi.org/project/pyqlib/#files)
+[![PypI Versions](https://img.shields.io/pypi/v/pyqlib)](https://pypi.org/project/pyqlib/#files)
+[![Documentation Status](https://readthedocs.org/projects/qlib/badge/?version=latest)](https://qlib.readthedocs.io/en/latest/?badge=latest)
+![Upload Python Package](https://github.com/microsoft/qlib/workflows/Upload%20Python%20Package/badge.svg)
+[![License](https://img.shields.io/pypi/l/pyqlib)](LICENSE)
 [![Join the chat at https://gitter.im/Microsoft/qlib](https://badges.gitter.im/Microsoft/qlib.svg)](https://gitter.im/Microsoft/qlib?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-<div style="text-align: center">
-<img src="http://fintech.msra.cn/images/logo/white_bg_rec+word.png" />
-</div>
+
+<p align="center">
+  <img src="http://fintech.msra.cn/images/logo/1.png" />
+</p>
 
 
 Qlib is an AI-oriented quantitative investment platform, which aims to realize the potential, empower the research, and create the value of AI technologies in quantitative investment.
@@ -56,7 +62,13 @@ This quick start guide tries to demonstrate
 
 ## Installation
 
-Users can easily intsall ``Qlib`` according to the following steps:
+Users can easily install ``Qlib`` by pip according to the following command
+
+```bash
+  pip install pyqlib
+```
+
+Also, Users can install ``Qlib`` by the source code according to the following steps:
 
 * Before installing ``Qlib`` from source, users need to install some dependencies:
 
@@ -83,7 +95,7 @@ This dataset is created by public data collected by [crawler scripts](scripts/da
 the same repository.
 Users could create the same dataset with it. 
 
-*Please pay **ATTENTION** that the data is collected from [Yahoo Finance](https://finance.yahoo.com/lookup) and the data might not be perfect. We recommend users to prepare their own data if they have high-quality dataset. For more information, users can refer to the [related document](https://qlib.readthedocs.io/en/latest/component/data.html#converting-csv-format-into-qlib-format)*
+*Please pay **ATTENTION** that the data is collected from [Yahoo Finance](https://finance.yahoo.com/lookup) and the data might not be perfect. We recommend users to prepare their own data if they have high-quality dataset. For more information, users can refer to the [related document](https://qlib.readthedocs.io/en/latest/component/data.html#converting-csv-format-into-qlib-format)*.
 
 <!-- 
 - Run the initialization code and get stock data:
@@ -115,7 +127,7 @@ Users could create the same dataset with it.
 ## Auto Quant Research Workflow
 Qlib provides a tool named `Estimator` to run the whole workflow automatically (including building dataset, training models, backtest and evaluation). You can start an auto quant research workflow and have a graphical reports analysis according to the following steps: 
 
-1. Quant Research Workflow: Run  `Estimator` with [estimator_config.yaml](examples/estimator/estimator_config.yaml) as following.
+1. Quant Research Workflow: Run  `Estimator` with [estimator_config.yaml](examples/estimator/estimator_config.yaml) as following. (*Please note that this may **not work** under MacOS with Python 3.8 due to the incompatibility of the `sacred` package we use with Python 3.8. We will fix this bug in the future.*)
     ```bash
       cd examples  # Avoid running program under the directory contains `qlib`
       estimator -c estimator/estimator_config.yaml
@@ -154,10 +166,9 @@ Qlib provides a tool named `Estimator` to run the whole workflow automatically (
       - Auto Correlation of forecasting signal (model prediction)
       ![Auto Correlation](http://fintech.msra.cn/images/analysis/analysis_model_auto_correlation.png?v=0.1)
 
-
     - Portfolio analysis
       - Backtest return
-      ![Report](http://fintech.msra.cn/images/analysis/report.png)
+      ![Report](http://fintech.msra.cn/images/analysis/report.png?v=0.1)
       <!-- 
       - Score IC
       ![Score IC](docs/_static/img/score_ic.png)
@@ -184,7 +195,7 @@ Your PR of new Quant models is highly welcomed.
 # Quant Dataset Zoo
 Dataset plays a very important role in Quant. Here is a list of the datasets build on `Qlib`.
 - [Alpha360](./qlib/contrib/estimator/handler.py)
-- [QLibDataHandlerClose](./qlib/contrib/estimator/handler.py)
+- [Alpha158](./qlib/contrib/estimator/handler.py)
 
 Here is a tutorial to build dataset with `Qlib`.
 Your PR to build new Quant dataset is highly welcomed.
